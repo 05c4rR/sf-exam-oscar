@@ -40,6 +40,9 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?SpecialOffer $specialOffer = null;
 
+    #[ORM\OneToOne(mappedBy: 'product', cascade: ['persist', 'remove'])]
+    private ?Stock $stock = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +140,23 @@ class Product
     public function setSpecialOffer(?SpecialOffer $specialOffer): static
     {
         $this->specialOffer = $specialOffer;
+
+        return $this;
+    }
+
+    public function getStock(): ?Stock
+    {
+        return $this->stock;
+    }
+
+    public function setStock(Stock $stock): static
+    {
+        // set the owning side of the relation if necessary
+        if ($stock->getProduct() !== $this) {
+            $stock->setProduct($this);
+        }
+
+        $this->stock = $stock;
 
         return $this;
     }
