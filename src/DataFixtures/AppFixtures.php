@@ -61,8 +61,8 @@ class AppFixtures extends Fixture
 
             $product
                 ->setName($faker->word())
-                ->setDescription($faker->paragraph())
-                ->setPrice($faker->randomFloat())
+                ->setDescription($faker->realText($maxNbChars = 200, $indexSize = 2))
+                ->setPrice($faker->randomFloat(2, 10, 300))
                 ->setVisible($faker->boolean())
                 ->setOnSale($faker->boolean())
                 ->setCategory($categories[random_int(0,count($categories)-1)])

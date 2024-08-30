@@ -181,6 +181,19 @@ class Product
         return $this;
     }
 
+    public function getFinalPrice(): float
+    {
+        $basePrice = $this->price;
+
+        // Apply special offer discount if applicable
+        if ($this->specialOffer) {
+            $discount = $this->specialOffer->getValue(); // assuming a fixed amount
+            $basePrice -= $discount;
+        }
+
+        return round($basePrice, 2);
+    }
+
     /**
      * @return Collection<int, Image>
      */

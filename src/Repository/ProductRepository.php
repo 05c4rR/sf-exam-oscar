@@ -16,6 +16,39 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function filterByPrice(string $order = 'asc'): array
+    {
+        // Validate the order parameter
+        $order = strtolower($order);
+        if ($order !== 'asc' && $order !== 'desc') {
+            throw new \InvalidArgumentException('Order parameter must be "asc" or "desc".');
+        }
+
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.price', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByName(string $name): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.name LIKE :name')
+            ->setParameter('name', '%' . $name . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySearchAndFilter(string $name, string $order): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.name LIKE :name')
+            ->setParameter('name', '%' . $name . '%')
+            ->orderBy('p.price', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Product[] Returns an array of Product objects
     //     */
