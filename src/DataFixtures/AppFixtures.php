@@ -61,17 +61,19 @@ class AppFixtures extends Fixture
             $product = new Product();
             $stock = new Stock();
 
+            $randomCategory = $categories[random_int(0, count($categories) - 1)];
+
             $stock
                 ->setProduct($product)
                 ->setQuantity($faker->randomNumber(3));
 
             $product
-                ->setName($faker->word())
                 ->setDescription($faker->realText($maxNbChars = 200, $indexSize = 2))
                 ->setPrice($faker->randomFloat(2, 10, 300))
                 ->setVisible($faker->boolean())
                 ->setOnSale($faker->boolean())
-                ->setCategory($categories[random_int(0,count($categories)-1)])
+                ->setCategory($randomCategory)
+                ->setName($randomCategory->getName())
                 ->setTax($standardVAT)
                 ->setStock($stock);
 

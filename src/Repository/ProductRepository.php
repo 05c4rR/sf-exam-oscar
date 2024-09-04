@@ -18,7 +18,6 @@ class ProductRepository extends ServiceEntityRepository
 
     public function filterByPrice(string $order = 'asc'): array
     {
-        // Validate the order parameter
         $order = strtolower($order);
         if ($order !== 'asc' && $order !== 'desc') {
             throw new \InvalidArgumentException('Order parameter must be "asc" or "desc".');

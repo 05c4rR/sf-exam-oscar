@@ -8,6 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: StockRepository::class)]
 class Stock
 {
+    public function __toString()
+    {
+      return $this->quantity;
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
