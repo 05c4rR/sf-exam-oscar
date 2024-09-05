@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,6 +32,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user')]
+    private Collection $purchaseOrder;
+
+    public function __construct()
+    {
+        $this->purchaseOrder = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,5 +117,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getPurchaseOrder(): Collection
+    {
+        return $this->purchaseOrder;
+    }
+
+    public function addPurchaseOrder(Order $purchaseOrder): static
+    {
+        if (!$this->purchaseOrder->contains($purchaseOrder)) {
+            $this->purchaseOrder->add($purchaseOrder);
+            $purchaseOrder->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchaseOrder(Order $purchaseOrder): static
+    {
+        if ($this->purchaseOrder->removeElement($purchaseOrder)) {
+            // set the owning side to null (unless already changed)
+            if ($purchaseOrder->getUser() === $this) {
+                $purchaseOrder->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

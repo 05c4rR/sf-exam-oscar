@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ controller_name }} {% endblock %}
+
+{% block body %}
+    <h1>Votre panier</h1>
+
+    {% if cart|length == 0 %}
+        <p>Le panier est vide</p>
+    {% else %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set total = 0 %}
+                {% for item in cart %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.getFinalPrice() }} €</td>
+                        <td>{{ (item.product.getFinalPrice() * item.quantity) }} €</td>
+                        <td>
+                            <form action="{{ path('cart_remove', {id: item.product.id}) }}" method="post">
+                                <button type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% set total = total + (item.product.getFinalPrice() * item.quantity) %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>Total HT: {{ total }} €</p>
+        <p><em>T.V.A:{{ (tax.value * 100) - 100 }} %</em></p>
+        <p><b>Total TTC: {{ (total * tax.value)|number_format(2, '.', ',') }}€</b></p>
+
+
+        <a href="{{ path('product') }}">Ajouter d'autres produits au panier</a>
+        <a href="{{ path('cart_checkout') }}">Valider la commande</a>
+    {% endif %}
+{% endblock %}

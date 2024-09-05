@@ -30,6 +30,10 @@ class Order
     #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderReference')]
     private Collection $orderItems;
 
+    #[ORM\ManyToOne(inversedBy: 'purchaseOrder')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
 
@@ -92,6 +96,18 @@ class Order
                 $orderItem->setOrderReference(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
