@@ -11,6 +11,7 @@ use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -76,6 +77,13 @@ class AppFixtures extends Fixture
                 ->setName($randomCategory->getName())
                 ->setTax($standardVAT)
                 ->setStock($stock);
+                // ->addImage('image', FileType::class, [
+                //     'mapped' => false,
+                //     'required' => false,
+                //     'constraint' => [
+                //         new Image()
+                //     ]
+                // ]);
 
             if($product->isOnSale()){
                 $product->setSpecialOffer($specialSale);

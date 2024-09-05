@@ -5,17 +5,23 @@
 {% block body %}
 <h2>Nom du produit: {{product.name}} <em>(id: {{product.id}})</em> </h2>
 <h3>Catégorie: {{product.category.name}} </h3>
+{% for image in product.images %}
+    <img src="{{ asset('uploads/images/' ~ image.imageName) }}" alt="{{ product.name }}">
+{% endfor %}
 {% if product.onSale %}
 <p>Ce produit est en promotion ! Prix: <b>{{product.getFinalPrice()}} €</b> au lieu de <s>{{product.price}}</s> € </p>
 {% else %}
 <p>Prix: <b>{{product.getFinalPrice()}} €</b> </p>
 {% endif %}
 
-<p>Stock: {{product.stock.quantity}} produits en stocks</p>
+<p>Stock: 
+{% if product.stock.quantity > 1 %}
+{{product.stock.quantity}} produits en stock
+{% else %}
+{{product.stock.quantity}} produit en stock
+{% endif %}
+</p>
 
 <p>Description du produit:<br> {{product.description}} </p>
-
-
-
 
 {% endblock %}

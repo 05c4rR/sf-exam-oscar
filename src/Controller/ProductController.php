@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,33 +23,55 @@ class ProductController extends AbstractController
     {
         $order = $request->query->get('order', 'asc'); 
         $searchTerm = $request->query->get('name', '');
+        $categoryId = $request->query->get('category_id');
         $categories = $categoryRepository->findAll();
-
+    
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
+    
         if (!in_array(strtolower($order), ['asc', 'desc'])) {
             $order = 'asc';
         }
+    
         if (!empty($searchTerm)) {
-            $products = $productRepository->findBySearchAndFilter($searchTerm, $order);
+            $queryBuilder = $productRepository->findBySearchAndFilter($searchTerm, $order);
+        } elseif ($categoryId) {
+            $queryBuilder = $productRepository->findBy(['category' => $categoryId], ['price' => $order]);
         } else {
-            $products = $productRepository->filterByPrice($order);
+            $queryBuilder = $productRepository->filterByPrice($order);
         }
 
+        if ($categoryId) {
+            $queryBuilder = $productRepository->findByCategory($categoryId, $order);
+        } else {
+            $queryBuilder = $productRepository->filterByPrice($order);
+        }        
+    
+        $paginator = new Pagerfanta(new QueryAdapter($queryBuilder));
+        $paginator->setCurrentPage($page);
+        $paginator->setMaxPerPage($limit);
+    
         return $this->render('product/index.html.twig', [
             'controller_name'   => 'ProductController',
             'page_name'         => !empty($searchTerm) ? 'Search Results' : 'Product',
-            'products'          => $products,
+            'products'          => $paginator,
             'order'             => $order,
             'search_term'       => $searchTerm,
             'categories'        => $categories,
-            'selected_category' => null
+            'selected_category' => $categoryId,
+            'currentPage'       => $paginator->getCurrentPage(),
+            'totalPages'        => $paginator->getNbPages(),
+            'nextPage'          => $paginator->hasNextPage() ? $paginator->getNextPage() : null,
+            'previousPage'      => $paginator->hasPreviousPage() ? $paginator->getPreviousPage() : null,
+            'selected_category' => $categoryId
         ]);
     }
 
     #[Route('/search', name: 'product_search')]
     public function searchByName(
-    ProductRepository $productRepository,
-    CategoryRepository $categoryRepository,
-    Request $request
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        Request $request
     ): Response
     {
         $name = $request->query->get('name', '');
@@ -67,7 +91,11 @@ class ProductController extends AbstractController
     }
 
     #[Route('/category', name: 'product_category')]
-    public function filterByCategory(ProductRepository $productRepository, CategoryRepository $categoryRepository, Request $request): Response
+    public function filterByCategory(
+        ProductRepository $productRepository,
+        CategoryRepository $categoryRepository,
+        Request $request
+    ): Response
     {
         $categories = $categoryRepository->findAll();
         $categoryId = $request->query->get('category_id');
