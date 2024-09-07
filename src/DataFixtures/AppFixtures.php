@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Category;
+use App\Entity\Image;
 use App\Entity\Product;
 use App\Entity\SpecialOffer;
 use App\Entity\Stock;
@@ -17,6 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private const NB_PRODUCTS = 100;
+    private const DEFAULT_IMAGE_PATH = 'uploads/images/tarteaucitron200x200-66d97a1028c2e.jpg';
 
     public function __construct(
         private UserPasswordHasherInterface $hasher
@@ -77,13 +79,12 @@ class AppFixtures extends Fixture
                 ->setName($randomCategory->getName())
                 ->setTax($standardVAT)
                 ->setStock($stock);
-                // ->addImage('image', FileType::class, [
-                //     'mapped' => false,
-                //     'required' => false,
-                //     'constraint' => [
-                //         new Image()
-                //     ]
-                // ]);
+
+                $image = new Image();
+                $image->setImageName(self::DEFAULT_IMAGE_PATH);
+                $image->setProduct($product);
+
+                $manager->persist($image);
 
             if($product->isOnSale()){
                 $product->setSpecialOffer($specialSale);

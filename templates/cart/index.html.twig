@@ -37,7 +37,7 @@
             </tbody>
         </table>
 
-        <p>Total HT: {{ total }} €</p>
+        <p><em>Total HT: {{ total }} €<em></p>
         <p><em>T.V.A:{{ (tax.value * 100) - 100 }} %</em></p>
         <p><b>Total TTC: {{ (total * tax.value)|number_format(2, '.', ',') }}€</b></p>
 

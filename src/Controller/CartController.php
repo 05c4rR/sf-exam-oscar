@@ -23,6 +23,7 @@ class CartController extends AbstractController
         $cart = $session->get('cart', []);
         $total = 0;
         $cartWithProducts = [];
+        $tax = null;
         
         foreach ($cart as $productId => $details) {
             $product = $productRepository->find($productId);
@@ -100,6 +101,7 @@ class CartController extends AbstractController
                 $orderItem = new OrderItem();
                 $orderItem->setProduct($product);
                 $orderItem->setQuantity($details['quantity']);
+                $orderItem->setPrice($product->getFinalPrice());
                 $orderItem->setOrderReference($order);
 
                 $entityManager->persist($orderItem);

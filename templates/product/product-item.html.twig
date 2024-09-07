@@ -6,7 +6,7 @@
 <h2>Nom du produit: {{product.name}} <em>(id: {{product.id}})</em> </h2>
 <h3>Catégorie: {{product.category.name}} </h3>
 {% for image in product.images %}
-    <img src="{{ asset('uploads/images/' ~ image.imageName) }}" alt="{{ product.name }}">
+    <img src="{{ asset(image.imageName) }}" alt="{{ product.name }}">
 {% endfor %}
 {% if product.onSale %}
 <p>Ce produit est en promotion ! Prix: <b>{{product.getFinalPrice()}} €</b> au lieu de <s>{{product.price}}</s> € </p>
