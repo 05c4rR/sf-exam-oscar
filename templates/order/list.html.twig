@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Commandes{% endblock %}
+
+{% block body %}
+    <h1>Mes commandes</h1>
+
+    {% if orders is empty %}
+        <p>Vous n'avez pas encore passé de commande.</p>
+    {% else %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    Commande #{{ order.id }} - Date : {{ order.createdAt|date('d/m/Y') }} 
+                    <a href="{{ path('user_order_details', {id: order.id}) }}">Voir les détails</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

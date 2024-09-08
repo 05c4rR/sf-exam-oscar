@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use LDAP\Result;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -75,18 +76,28 @@ class ProductController extends AbstractController
     ): Response
     {
         $name = $request->query->get('name', '');
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
         
-        $products = $productRepository->findByName($name);
+        $queryBuilder  = $productRepository->findByName($name);
         $categories = $categoryRepository->findAll();
+
+        $paginator = new Pagerfanta(new QueryAdapter($queryBuilder));
+        $paginator->setMaxPerPage($limit);
+        $paginator->setCurrentPage($page);
 
         return $this->render('product/index.html.twig', [
             'controller_name'   => 'ProductController',
             'page_name'         => 'Search Results',
-            'products'          => $products,
+            'products'          => $paginator,
             'order'             => 'asc',
             'search_term'       => $name,
             'categories'        => $categories,
-            'selected_category' => null
+            'selected_category' => null,
+            'totalPages'        => $paginator->getNbPages(),
+            'currentPage'       => $paginator->getCurrentPage(),
+            'nextPage'          => $paginator->hasNextPage() ? $paginator->getNextPage() : null,
+            'previousPage'      => $paginator->hasPreviousPage() ? $paginator->getPreviousPage() : null
         ]);
     }
 
@@ -126,6 +137,18 @@ class ProductController extends AbstractController
             'controller_name' => 'ProductController',
             'page_name'       => 'Product',
             'product'         => $product
+        ]);
+    }
+
+    #[Route('/promotion' , name: 'product_on_sale')]
+    public function productOnSale(ProductRepository $productRepository): Response
+    {
+        $products = $productRepository->findBy(['onSale' => true]);
+
+        return $this->render('product/promo.html.twig', [
+            'controller_name' => 'ProductController',
+            'page_name'       => 'Products On Sale',
+            'products'         => $products
         ]);
     }
 }

@@ -6,13 +6,13 @@
     <h1>{{ page_name }}</h1>
 
     <form method="get" action="{{ path('product') }}">
-        <label for="order">Sort by Price:</label>
+        <label for="order">Trier par prix:</label>
         <select name="order" id="order">
-            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascending</option>
-            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descending</option>
+            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Croissant</option>
+            <option value="desc" {% if order == 'desc' %}selected{% endif %}>Décroissant</option>
         </select>
 
-        <label for="category">Filter by Category:</label>
+        <label for="category">Filtrer par catégories:</label>
         <select name="category_id" id="category">
             <option value="">All Categories</option>
             {% for category in categories %}
@@ -26,9 +26,11 @@
             <input type="hidden" name="name" value="{{ search_term }}">
         {% endif %}
         
-        <button type="submit">Apply Filters</button>
+        <button type="submit">Rechercher</button>
     </form>
 
+    <a href="{{path('product_on_sale')}}">Voir tous les articles en promotions</a>
+    
     <ul>
         {% for product in products %}
             <li>

@@ -30,13 +30,12 @@ class ProductRepository extends ServiceEntityRepository
             ->setMaxResults($limit);
     
     }
-    public function findByName(string $name): array
+    public function findByName(string $name)
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.name LIKE :name')
             ->setParameter('name', '%' . $name . '%')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
     }
 
     public function findBySearchAndFilter(string $name, string $order, int $page = 1, int $limit = 10)

@@ -37,4 +37,6 @@
         <button type="submit">Passer au paiment</button>
     </form>
 
+    <a href="{{ path('payment_cancel', { id: order.id }) }}" class="btn btn-danger">Annuler la commande</a>
+
 {% endblock %}

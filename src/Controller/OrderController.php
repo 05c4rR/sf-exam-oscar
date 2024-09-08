@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\Tax;
 use App\Enum\OrderStatus;
+use App\Repository\OrderRepository;
+use App\Repository\TaxRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,9 +69,10 @@ class OrderController extends AbstractController
             'mode' => 'payment',
 
             'success_url' => $this->generateUrl('payment_success', ['id' => $order->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'cancel_url' => $this->generateUrl('payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'cancel_url' => $this->generateUrl('payment_cancel', ['id' => $order->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             
         ]);
+
         // Décommenter la ligne ci dessous pour accéder au portail de paiement de Stripe depuis cette url
         // dd($session->url);
         return $this->redirect($session->url);
@@ -87,10 +90,52 @@ class OrderController extends AbstractController
         return $this->render('order/success.html.twig');
     }
 
-    #[Route('/payment/cancel', name: 'payment_cancel')]
-    public function paymentCancel(): Response
-    {
+    #[Route('/payment/cancel/{id}', name: 'payment_cancel')]
+    public function paymentCancel(int $id, OrderRepository $orderRepository, EntityManagerInterface $entityManager): Response
+    {   
+        $order = $orderRepository->find($id);
+
+        $order->setStatus(OrderStatus::CANCELLED);
+
+        $entityManager->persist($order);
+        $entityManager->flush();
+
         return $this->render('order/cancel.html.twig');
+    }
+
+    #[Route('/user/orders', name: 'user_orders')]
+    public function listOrders(EntityManagerInterface $entityManager, OrderRepository $orderRepository): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $orders = $orderRepository->findBy(['user' => $user]);
+
+        return $this->render('order/list.html.twig', [
+            'orders' => $orders
+        ]);
+    }
+
+    #[Route('/user/orders/{id}', name: 'user_order_details')]
+    public function orderDetails(int $id, EntityManagerInterface $entityManager, OrderRepository $orderRepository, TaxRepository $taxRepository): Response
+    {
+        $order = $orderRepository->find($id);
+        $tax = $taxRepository->findOneBy(['name' => 'T.V.A']);
+
+
+        if (!$order || $order->getUser() !== $this->getUser()) {
+            throw $this->createNotFoundException('Commande introuvable ou accès refusé.');
+        }
+
+        $taxValue = $tax->getValue();
+
+        return $this->render('order/detail.html.twig', [
+            'order' => $order,
+            'tax' => $taxValue
+        ]);
     }
 
 }

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Commande{% endblock %}
+
+{% block body %}
+    <h1>Détails de la commande #{{ order.id }}</h1>
+
+    <p>Date de la commande : {{ order.createdAt|date('d/m/Y') }}</p>
+
+    <p>Statut de la commande : {{ order.getStatusData() }} </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.orderItems %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }} €</td>
+                    <td>{{ item.price * item.quantity }} €</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Prix total TTC : {{ (order.getTotalPrice() * tax)|number_format(2, '.', ',') }} €</strong></p>
+
+    <a href="{{ path('user_orders') }}">Retour à mes commandes</a>
+{% endblock %}

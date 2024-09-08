@@ -70,6 +70,17 @@ class Order
         return $this;
     }
 
+    public function getStatusData(): string
+    {
+        return match($this->status) {
+            OrderStatus::PENDING => 'En attente',
+            OrderStatus::CONFIRMED => 'Confirmée',
+            OrderStatus::SHIPPED => 'Expédiée',
+            OrderStatus::DELIVERED => 'Livrée',
+            OrderStatus::CANCELLED => 'Annulée',
+        };
+    }
+
     /**
      * @return Collection<int, OrderItem>
      */
@@ -110,5 +121,18 @@ class Order
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getTotalPrice(): float
+    {
+        $total = 0;
+
+        foreach ($this->orderItems as $item) {
+            $total += $item->getPrice() * $item->getQuantity();
+        }
+
+
+
+        return $total;
     }
 }
