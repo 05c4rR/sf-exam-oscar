@@ -130,9 +130,7 @@ class Order
         foreach ($this->orderItems as $item) {
             $total += $item->getPrice() * $item->getQuantity();
         }
-
-
-
+        
         return $total;
     }
 }

@@ -1,0 +1,14 @@
+<h1>Merci pour votre commande !</h1>
+
+<p>Votre commande #{{ order.id }} a bien été confirmée.</p>
+<p>Résumé de votre commande :</p>
+
+<ul>
+    {% for item in order.orderItems %}
+        <li>{{ item.quantity }} x {{ item.product.name }} - {{ item.price }} €</li>
+    {% endfor %}
+</ul>
+
+<p>Total : {{ ((order.getTotalPrice() * 1.3)|number_format(2, '.', ',')) }} €</p>
+
+<p>Cordialement, l'équipe de la boutique</p>

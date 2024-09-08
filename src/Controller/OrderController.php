@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\EmailService\OrderEmailConfirmation;
 use App\Entity\Order;
 use App\Entity\Tax;
 use App\Enum\OrderStatus;
@@ -79,13 +80,16 @@ class OrderController extends AbstractController
     }
 
     #[Route('/payment/success/{id}', name: 'payment_success')]
-    public function paymentSuccess(int $id, EntityManagerInterface $entityManager): Response
+    public function paymentSuccess(int $id, EntityManagerInterface $entityManager, OrderEmailConfirmation $email): Response
     {
         $order = $entityManager->getRepository(Order::class)->find($id);
         $order->setStatus(OrderStatus::CONFIRMED);
 
         $entityManager->persist($order);
         $entityManager->flush();
+
+        // Decommenter cette ligne pour activer l'envoie d'email apres paiement de la commande
+        // $email->sendOrderConfirmationEmail($this->getUser(), $order);
         
         return $this->render('order/success.html.twig');
     }
