@@ -12,8 +12,14 @@ Une légère interface admin permet de gérer les produits, les catégories et l
 * Inscription et connexion
 * Une fois connecter l'utilisateur peut cliquer sur son email dans la nav pour consulter les commandes qu'il a passé
 * L'utilisateur peut remplir son panier d'achat même s'il n'est pas connecté. Au moment de valider son panier par contre, il sera demandé de se connecter ou de s'inscrire pour continuer
-* J'ai utilisé l'api Stripe pour simuler les paiements bancaires. Par contre je n'ai pas réussi à l'utiliser correctement, je rencontre un bug au moment de la redirection vers le portail de paiement. Pour accéder au portail de Stripe, il faut décommenter la ligne ```php // dd($session->url); ``` juste avant la redirection et copier l'url. Désolé pour ces étapes supplémentaires, mais je n'ai pas réussi à trouvé de solutions.
-* Un email de confirmation est envoyé après le paiement de la commande _en théories_**. J'ai ajouté le service d'email mais je ne sais pas comment le tester, alors _je pense que ça marche_** mais je l'ai pas testé. J'ai commenté la ligne ```php $email->sendOrderConfirmationEmail($this->getUser(), $order); ``` pour pas causer de bugs.
+* J'ai utilisé l'api Stripe pour simuler les paiements bancaires. Par contre je n'ai pas réussi à l'utiliser correctement, je rencontre un bug au moment de la redirection vers le portail de paiement. Pour accéder au portail de Stripe, il faut décommenter la ligne 
+```php // dd($session->url); 
+``` 
+juste avant la redirection et copier l'url. Désolé pour ces étapes supplémentaires, mais je n'ai pas réussi à trouvé de solutions.
+* Un email de confirmation est envoyé après le paiement de la commande _en théories_**. J'ai ajouté le service d'email mais je ne sais pas comment le tester, alors _je pense que ça marche_** mais je l'ai pas testé. J'ai commenté la ligne
+```php $email->sendOrderConfirmationEmail($this->getUser(), $order);
+```
+pour pas causer de bugs.
 
 ### Fonctionnalités Admin
 
